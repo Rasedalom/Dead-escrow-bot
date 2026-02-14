@@ -7,12 +7,19 @@ TOKEN = os.getenv("TOKEN")
 
 deals = {}
 
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Escrow Bot is Active ✅")
+
 async def deal(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 3:
+        await update.message.reply_text("Usage: /deal buyer seller amount")
+        return
+
     buyer = context.args[0]
     seller = context.args[1]
     amount = context.args[2]
 
-    trade_id = random.randint(10000,99999)
+    trade_id = random.randint(10000, 99999)
 
     deals[str(trade_id)] = {
         "buyer": buyer,
@@ -29,6 +36,10 @@ async def deal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def release(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if len(context.args) < 1:
+        await update.message.reply_text("Usage: /release TRADE_ID")
+        return
+
     trade_id = context.args[0]
 
     if trade_id in deals:
@@ -42,7 +53,14 @@ async def release(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"👤 Seller: @{deal['seller']}"
         )
 
+        del deals[trade_id]
+    else:
+        await update.message.reply_text("Invalid Trade ID")
+
 app = ApplicationBuilder().token(TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("deal", deal))
 app.add_handler(CommandHandler("release", release))
+
 app.run_polling()
