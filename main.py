@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 TOKEN = os.getenv("TOKEN")
-
+print("TOKEN VALUE:", TOKEN)
 deals = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
